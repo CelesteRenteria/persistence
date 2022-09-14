@@ -51,4 +51,10 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.insert('cats', cat.toMap());
   }
+
+  Future<int> delete(int id) async {
+    Database db = await instance.database;
+    return await db.delete('cats', where: 'id = ?', whereArgs: [id]);
+  }
+
 }
