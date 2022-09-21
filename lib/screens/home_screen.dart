@@ -11,12 +11,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  //variables para guardar los datos de los text form fields
+  final textControllerRace = TextEditingController();
+  final textControllerName = TextEditingController();
+  //acept integers and nulls
+  int? catId;
+
   @override
   Widget build(BuildContext context) {
-    //variables para guardar los datos de los text form fields
-    final textControllerRace = TextEditingController();
-    final textControllerName = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("SQLite Example with Cats"),
@@ -69,7 +71,28 @@ class _HomeScreenState extends State<HomeScreen> {
                             shrinkWrap: true,
                             children: snapshot.data!.map((cat) {
                               return Center(
-                                  child: ListTile(title: Text(cat.name)));
+                                  child: ListTile(
+                                title: Text(
+                                    'Name: ${cat.name} | Race: ${cat.race}'),
+                                onLongPress: () {
+                                  setState(() {
+                                    DatabaseHelper.instance.delete(cat.id!);
+                                  });
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    if (catId == null) {
+                                      textControllerName.text = cat.name;
+                                      textControllerRace.text = cat.race;
+                                      catId = cat.id;
+                                    } else {
+                                      textControllerName.clear();
+                                      textControllerRace.clear();
+                                      catId = null;
+                                    }
+                                  });
+                                },
+                              ));
                             }).toList());
                   }
                 },
@@ -81,12 +104,19 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.save),
         onPressed: () async {
-          DatabaseHelper.instance.add(Cat(
-              race: textControllerRace.text, name: textControllerName.text));
-          setState(() {
-            textControllerName.clear();
-            textControllerRace.clear();
-          });
+          if (catId == null) {
+            await DatabaseHelper.instance.update(Cat(
+                race: textControllerRace.text,
+                name: textControllerName.text,
+                id: catId));
+          } else {
+            DatabaseHelper.instance.add(Cat(
+                race: textControllerRace.text, name: textControllerName.text));
+            setState(() {
+              textControllerName.clear();
+              textControllerRace.clear();
+            });
+          }
         },
       ),
     );

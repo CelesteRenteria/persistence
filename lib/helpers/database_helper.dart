@@ -57,4 +57,10 @@ class DatabaseHelper {
     return await db.delete('cats', where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<int> update(Cat cat) async{
+    Database db = await instance.database;
+    return await db.update('cats', cat.toMap(), where: 'id = ?', whereArgs: [cat.id]);
+  }
+
+
 }
