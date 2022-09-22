@@ -1,6 +1,6 @@
 class Cat {
   //int id
-  var id;
+  int? id;
   final String race;
   final String name;
 

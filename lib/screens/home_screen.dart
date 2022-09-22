@@ -15,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final textControllerRace = TextEditingController();
   final textControllerName = TextEditingController();
   //acept integers and nulls
+  //int? catId;
   int? catId;
 
   @override
@@ -71,28 +72,33 @@ class _HomeScreenState extends State<HomeScreen> {
                             shrinkWrap: true,
                             children: snapshot.data!.map((cat) {
                               return Center(
-                                  child: ListTile(
-                                title: Text(
-                                    'Name: ${cat.name} | Race: ${cat.race}'),
-                                onLongPress: () {
-                                  setState(() {
-                                    DatabaseHelper.instance.delete(cat.id!);
-                                  });
-                                },
-                                onTap: () {
-                                  setState(() {
-                                    if (catId == null) {
-                                      textControllerName.text = cat.name;
-                                      textControllerRace.text = cat.race;
-                                      catId = cat.id;
-                                    } else {
-                                      textControllerName.clear();
-                                      textControllerRace.clear();
-                                      catId = null;
-                                    }
-                                  });
-                                },
-                              ));
+                                  child: Card(
+                                    color: catId == cat.id ? Colors.amberAccent : Colors.white, 
+                                    child: ListTile(
+                                      textColor: catId == cat.id ? Colors.white : Colors.black,
+                                                                  title: Text(
+                                      'Name: ${cat.name} | Race: ${cat.race}'),
+                                                                  onLongPress: () {
+                                    setState(() {
+                                      DatabaseHelper.instance.delete(cat.id!);
+                                    });
+                                                                  },
+                                                                  onTap: () {
+                                    setState(() {
+                                      if (catId == null) {
+                                        textControllerName.text = cat.name;
+                                        textControllerRace.text = cat.race;
+                                        catId = cat.id;
+                                      } else {
+                                        textControllerName.clear();
+                                        textControllerRace.clear();
+                                        //catId = null
+                                        catId = 0;
+                                      }
+                                    });
+                                                                  },
+                                                                ),
+                                  ));
                             }).toList());
                   }
                 },
