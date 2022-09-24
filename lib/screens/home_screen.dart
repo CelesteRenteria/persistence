@@ -14,6 +14,9 @@ class _HomeScreenState extends State<HomeScreen> {
   //variables para guardar los datos de los text form fields
   final textControllerRace = TextEditingController();
   final textControllerName = TextEditingController();
+  final textControllerID = TextEditingController();
+  
+  
   //acept integers and nulls
   //int? catId;
   int? catId;
@@ -44,6 +47,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const InputDecoration(
                     icon: Icon(Icons.text_format_outlined),
                     labelText: "Input the cat's name")),
+            //------------
+            //TextFormField(
+            //    controller: textControllerID,
+            //    decoration: const InputDecoration(
+             //       icon: Icon(Icons.text_format_outlined),
+              //      labelText: "Input ID")),
+            //---------------
             Center(
               child: (
                   //Ideal guardar lo siguiente en un widget independiente
@@ -117,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 id: catId));
           } else {
             DatabaseHelper.instance.add(Cat(
-                race: textControllerRace.text, name: textControllerName.text));
+                race: textControllerRace.text, name: textControllerName.text ));
             setState(() {
               textControllerName.clear();
               textControllerRace.clear();

@@ -29,7 +29,66 @@ class _TakenPictureScreenState extends State<TakenPictureScreen> {
     _controller.dispose();
     super.dispose();
   }
+
+  @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title:const Text ('Take a picture')
+      ),
+      body: FutureBuilder<void>(
+        //linked with the controller
+        future: _initializeControllerFuture,
+        builder:(context, snapshot){
+          if(snapshot.connectionState == ConnectionState.done){
+            return CameraPreview(_controller);
+          }
+          else{
+            return const Center(
+              child: CircularProgressIndicator()
+            );
+          }
+
+        }
+      ),
+      //Todo lo que tenga que ver con partes del codigo no inmediatas
+      floatingActionButton: FloatingActionButton(
+        onPressed:() async {
+          try{
+            await _initializeControllerFuture;
+            final image = await _controller.takePicture();
+            //mounted calls o el initState o Dispose
+            if(!mounted) return;
+
+            await Navigator.of(context).push(
+              MaterialPageRoute(builder: (context)=> NewScreen(imagePath: image.path)
+              )
+            );
+
+          }
+          catch (e){
+            print(e);
+          }
+        },
+        child: const Icon(Icons.camera_alt),
+      )
+
+    );
+  }
+}
+
+class NewScreen extends StatelessWidget {
+  final String imagePath;
+
+  const NewScreen({Key? key, required this.imagePath}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Display the picture"),
+      ),
+      body: Image.file(File(imagePath)),
+    );
   }
 }
