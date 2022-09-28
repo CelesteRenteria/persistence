@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:persistence/helpers/database_helper.dart';
 import 'package:persistence/models/cat_model.dart';
+import 'package:persistence/screens/taken_picture_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 
 //ctrl+. para convertir a statefulwidget
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final CameraDescription Camara;
+  const HomeScreen({Key? key, required this.Camara}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late final CameraDescription passCamara;
   int? catid;
   //variables para guardar los datos de los text form fields
   final textControllerRace = TextEditingController();
   final textControllerName = TextEditingController();
+  
   
   
   
@@ -48,7 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const InputDecoration(
                     icon: Icon(Icons.text_format_outlined),
                     labelText: "Input the cat's name")),
-            
+            ElevatedButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> TakenPictureScreen(camera: this.passCamara)));
+            }, 
+            child: const Text("Take a picture")),
             Center(
               child: (
                   //Ideal guardar lo siguiente en un widget independiente
@@ -123,8 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
             DatabaseHelper.instance.add(Cat(
                 race: textControllerRace.text, name: textControllerName.text ));
           }
-          DatabaseHelper.instance.add(
-            Cat(race: textControllerRace.text, name: textControllerName.text));
+         // DatabaseHelper.instance.add(
+         //   Cat(race: textControllerRace.text, name: textControllerName.text));
             setState(() {
               textControllerName.clear();
               textControllerRace.clear();
