@@ -11,15 +11,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int? catid;
   //variables para guardar los datos de los text form fields
   final textControllerRace = TextEditingController();
   final textControllerName = TextEditingController();
-  final textControllerID = TextEditingController();
+  
   
   
   //acept integers and nulls
   //int? catId;
-  int? catId;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const InputDecoration(
                     icon: Icon(Icons.text_format_outlined),
                     labelText: "Input the cat's name")),
-            //------------
-            //TextFormField(
-            //    controller: textControllerID,
-            //    decoration: const InputDecoration(
-             //       icon: Icon(Icons.text_format_outlined),
-              //      labelText: "Input ID")),
-            //---------------
+            
             Center(
               child: (
                   //Ideal guardar lo siguiente en un widget independiente
@@ -74,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return snapshot.data!.isEmpty
                         ? Center(
                             child: Container(
-                              child: Text("No cats in the list"),
+                              child: const Text("No cats in the list"),
                             ),
                           )
                         : ListView(
@@ -83,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: snapshot.data!.map((cat) {
                               return Center(
                                   child: Card(
-                                    color: catId == cat.id ? Colors.amberAccent : Colors.white, 
+                                    color: catid == cat.id ? Colors.amberAccent : Colors.white, 
                                     child: ListTile(
-                                      textColor: catId == cat.id ? Colors.white : Colors.black,
+                                      textColor: catid == cat.id ? Colors.white : Colors.black,
                                                                   title: Text(
                                       'Name: ${cat.name} | Race: ${cat.race}'),
                                                                   onLongPress: () {
@@ -95,15 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   },
                                                                   onTap: () {
                                     setState(() {
-                                      if (catId == null) {
+                                      if (catid == null) {
                                         textControllerName.text = cat.name;
                                         textControllerRace.text = cat.race;
-                                        catId = cat.id;
+                                        catid = cat.id;
                                       } else {
                                         textControllerName.clear();
                                         textControllerRace.clear();
-                                        //catId = null
-                                        catId = 0;
+                                        catid = null;
                                       }
                                     });
                                                                   },
@@ -120,19 +114,21 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.save),
         onPressed: () async {
-          if (catId == null) {
+          if (catid == null) {
             await DatabaseHelper.instance.update(Cat(
                 race: textControllerRace.text,
                 name: textControllerName.text,
-                id: catId));
+                id: catid));
           } else {
             DatabaseHelper.instance.add(Cat(
                 race: textControllerRace.text, name: textControllerName.text ));
+          }
+          DatabaseHelper.instance.add(
+            Cat(race: textControllerRace.text, name: textControllerName.text));
             setState(() {
               textControllerName.clear();
               textControllerRace.clear();
             });
-          }
         },
       ),
     );

@@ -37,12 +37,12 @@ class DatabaseHelper {
 
   Future<List<Cat>> getCats() async {
     Database db = await instance.database;
-    var cats = await db.query('cats', orderBy: "race");
+    var cats = await db.query('cats', orderBy: 'race');
 
     //si no es empty ? (entonces)... has esto :(else) si no se cumple regresame la lista vacia
     //Ternalia dicen
     List<Cat> catsList =
-        cats.isNotEmpty ? cats.map((e) => Cat.fromMap(e)).toList() : [];
+        cats.isNotEmpty? cats.map((e) => Cat.fromMap(e)).toList() : [];
     return catsList;
   }
 
