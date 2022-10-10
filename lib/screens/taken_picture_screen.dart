@@ -3,6 +3,8 @@ import 'package:camera/camera.dart';
 import 'dart:io';
 import 'dart:async';
 
+import 'package:persistence/screens/home_screen.dart';
+
 class TakenPictureScreen extends StatefulWidget {
   final CameraDescription camera;
   
@@ -61,7 +63,7 @@ class _TakenPictureScreenState extends State<TakenPictureScreen> {
             if(!mounted) return;
 
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context)=> NewScreen(imagePath: image.path)
+              MaterialPageRoute(builder: (context)=> NewScreen(imagePath: image.path, passCamarados: widget.camera)
               )
             );
 
@@ -79,8 +81,8 @@ class _TakenPictureScreenState extends State<TakenPictureScreen> {
 
 class NewScreen extends StatelessWidget {
   final String imagePath;
-
-  const NewScreen({Key? key, required this.imagePath}) : super(key: key);
+  final CameraDescription passCamarados;
+  const NewScreen({Key? key, required this.imagePath, required this.passCamarados}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +90,19 @@ class NewScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Display the picture"),
       ),
-      body: Image.file(File(imagePath)),
+      body: 
+      //Image.file(File(imagePath)),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+        Image.file(File(imagePath)),
+        FloatingActionButton(
+          child: const Icon(Icons.save),
+          onPressed: (){
+          print(imagePath);
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen(passCamara: passCamarados, imgapath: imagePath)));
+        })
+      ])
     );
   }
 }

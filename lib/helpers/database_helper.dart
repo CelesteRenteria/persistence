@@ -30,7 +30,8 @@ class DatabaseHelper {
       CREATE TABLE cats (
         id INTEGER PRIMARY KEY,
         race TEXT,
-        name TEXT
+        name TEXT,
+        imagepath TEXT
       )
       ''');
   }

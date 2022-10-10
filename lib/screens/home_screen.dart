@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:persistence/helpers/database_helper.dart';
 import 'package:persistence/models/cat_model.dart';
@@ -7,26 +9,23 @@ import 'package:camera/camera.dart';
 
 //ctrl+. para convertir a statefulwidget
 class HomeScreen extends StatefulWidget {
-  final CameraDescription Camara;
-  const HomeScreen({Key? key, required this.Camara}) : super(key: key);
+  final CameraDescription passCamara;
+  final String imgapath;
+  const HomeScreen({Key? key, required this.passCamara, required this.imgapath})
+      : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final CameraDescription passCamara;
   int? catid;
   //variables para guardar los datos de los text form fields
   final textControllerRace = TextEditingController();
   final textControllerName = TextEditingController();
-  
-  
-  
-  
+
   //acept integers and nulls
   //int? catId;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +53,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const InputDecoration(
                     icon: Icon(Icons.text_format_outlined),
                     labelText: "Input the cat's name")),
-            ElevatedButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> TakenPictureScreen(camera: this.passCamara)));
-            }, 
-            child: const Text("Take a picture")),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(primary: Colors.amber),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              TakenPictureScreen(camera: widget.passCamara)));
+                },
+                child: const Text("Take a picture")),
+            //ClipRRect(
+            //  borderRadius: BorderRadius.circular(8.0),
+            //  child: const Image(
+            //    image: NetworkImage(
+            //        "https://i.pinimg.com/236x/bc/3e/3d/bc3e3de9ca839288c7779965afb5c17c.jpg"),
+             //   width: 100,
+              //),
+            //),
             Center(
               child: (
                   //Ideal guardar lo siguiente en un widget independiente
@@ -81,37 +94,48 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: const Text("No cats in the list"),
                             ),
                           )
-                        : ListView(
+                        :   ListView(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             children: snapshot.data!.map((cat) {
-                              return Center(
-                                  child: Card(
-                                    color: catid == cat.id ? Colors.amberAccent : Colors.white, 
-                                    child: ListTile(
-                                      textColor: catid == cat.id ? Colors.white : Colors.black,
-                                                                  title: Text(
-                                      'Name: ${cat.name} | Race: ${cat.race}'),
-                                                                  onLongPress: () {
-                                    setState(() {
-                                      DatabaseHelper.instance.delete(cat.id!);
-                                    });
-                                                                  },
-                                                                  onTap: () {
-                                    setState(() {
-                                      if (catid == null) {
-                                        textControllerName.text = cat.name;
-                                        textControllerRace.text = cat.race;
-                                        catid = cat.id;
-                                      } else {
-                                        textControllerName.clear();
-                                        textControllerRace.clear();
-                                        catid = null;
-                                      }
-                                    });
-                                                                  },
-                                                                ),
-                                  ));
+                              return Column(
+                                children: [
+                                  SizedBox(
+                                    width: 100,
+                                    child: Image.file(File(cat.imagepath)),
+                                  ),
+                                  Center(
+                                    child: Card(
+                                  color: catid == cat.id
+                                      ? Colors.amberAccent
+                                      : Colors.white,
+                                  child: ListTile(
+                                    textColor: catid == cat.id
+                                        ? Colors.white
+                                        : Colors.black,
+                                    title: Text(
+                                        'Name: ${cat.name} | Race: ${cat.race}'),
+                                    onLongPress: () {
+                                      setState(() {
+                                        DatabaseHelper.instance.delete(cat.id!);
+                                      });
+                                    },
+                                    onTap: () {
+                                      setState(() {
+                                        if (catid == null) {
+                                          textControllerName.text = cat.name;
+                                          textControllerRace.text = cat.race;
+                                          catid = cat.id;
+                                        } else {
+                                          textControllerName.clear();
+                                          textControllerRace.clear();
+                                          catid = null;
+                                        }
+                                      });
+                                    },
+                                  ),
+                                )),
+          ]);
                             }).toList());
                   }
                 },
@@ -127,17 +151,21 @@ class _HomeScreenState extends State<HomeScreen> {
             await DatabaseHelper.instance.update(Cat(
                 race: textControllerRace.text,
                 name: textControllerName.text,
+                imagepath: widget.imgapath,
                 id: catid));
+            //print(widget.imgapath);
           } else {
             DatabaseHelper.instance.add(Cat(
-                race: textControllerRace.text, name: textControllerName.text ));
+                race: textControllerRace.text, name: textControllerName.text,
+                imagepath: widget.imgapath
+                ));
           }
-         // DatabaseHelper.instance.add(
-         //   Cat(race: textControllerRace.text, name: textControllerName.text));
-            setState(() {
-              textControllerName.clear();
-              textControllerRace.clear();
-            });
+           DatabaseHelper.instance.add(
+             Cat(race: textControllerRace.text, name: textControllerName.text,imagepath: widget.imgapath));
+          setState(() {
+            textControllerName.clear();
+            textControllerRace.clear();
+          });
         },
       ),
     );
